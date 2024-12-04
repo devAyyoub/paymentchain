@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -68,6 +70,18 @@ public class CustomerRestController {
                 connection.addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
             });
 
+    
+    // @Value("${custom.activeprofileName}")
+    // private String profile
+    
+    @Autowired
+    private Environment env;
+    
+    @GetMapping("/check")
+    public String check() {
+        return "Hello your property value is " + env.getProperty("custom.activeprofileName");
+    }
+    
     @GetMapping()
     public List<Customer> findAll() {
         return customerRepository.findAll();
