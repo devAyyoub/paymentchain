@@ -1,30 +1,30 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/springframework/RestController.java to edit this template
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package com.paymentchain.customer.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.paymentchain.customer.entities.Customer;
 import com.paymentchain.customer.entities.CustomerProduct;
-import com.paymentchain.customer.repository.CustomerRepository;
+import com.paymentchain.customer.respository.CustomerRepository;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.epoll.EpollChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import java.time.Duration;
-import java.util.Collections;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import java.util.Collections;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,7 +39,7 @@ import reactor.netty.http.client.HttpClient;
 
 /**
  *
- * @author ayyoub
+ * @author sotobotero
  */
 @RestController
 @RequestMapping("/customer")
@@ -69,31 +69,31 @@ public class CustomerRestController {
                 connection.addHandlerLast(new ReadTimeoutHandler(5000, TimeUnit.MILLISECONDS));
                 connection.addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
             });
-
     
-    // @Value("${custom.activeprofileName}")
-    // private String profile
     
-    @Autowired
-    private Environment env;
+    // @Value("${custom.activeprofile}")
+   // private String profile;
     
-    @GetMapping("/check")
+        @Autowired
+   private Environment env;
+    
+     @GetMapping("/check")
     public String check() {
-        return "Hello your property value is " + env.getProperty("custom.activeprofileName");
+        return "Hello your proerty value is: "+ env.getProperty("custom.activeprofileName");
     }
-    
+
     @GetMapping()
-    public List<Customer> findAll() {
+    public List<Customer> list() {
         return customerRepository.findAll();
     }
 
     @GetMapping("/{id}")
-    public Customer get(@PathVariable long id) {
+    public Customer get(@PathVariable(name = "id") long id) {
         return customerRepository.findById(id).get();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@PathVariable long id, @RequestBody Customer input) {
+    public ResponseEntity<?> put(@PathVariable(name = "id") long id, @RequestBody Customer input) {
         Customer find = customerRepository.findById(id).get();
         if (find != null) {
             find.setCode(input.getCode());
@@ -114,7 +114,7 @@ public class CustomerRestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable long id) {
+    public ResponseEntity<?> delete(@PathVariable(name = "id") long id) {
         Optional<Customer> findById = customerRepository.findById(id);
         if (findById.get() != null) {
             customerRepository.delete(findById.get());
@@ -123,20 +123,30 @@ public class CustomerRestController {
     }
 
     @GetMapping("/full")
-    public Customer getByCode(@RequestParam String code) {
+    public Customer getByCode(@RequestParam(name = "code") String code) {
         Customer customer = customerRepository.findByCode(code);
-        List<CustomerProduct> products = customer.getProducts();
-        products.forEach(x -> {
-            String productName = getProductName(x.getProductId());
-            x.setProductName(productName);
-        });
-        
-        List<?> transactions = getTransaction(customer.getIban());
-        customer.setTransactions(transactions);
-        
+        if (customer != null) {
+            List<CustomerProduct> products = customer.getProducts();
+
+            //for each product find it name
+            products.forEach(x -> {
+                String productName = getProductName(x.getProductId());
+                x.setProductName(productName);
+            });
+            //find all transactions that belong this account number
+            List<?> transactions = getTransactions(customer.getIban());
+            customer.setTransactions(transactions);
+  
+        }
         return customer;
     }
 
+    /**
+     * Call Product Microservice , find a product by Id and return it name
+     *
+     * @param id of product to find
+     * @return name of product if it was find
+     */
     private String getProductName(long id) {
         WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
                 .baseUrl("http://localhost:8083/product")
@@ -145,26 +155,34 @@ public class CustomerRestController {
                 .build();
         JsonNode block = build.method(HttpMethod.GET).uri("/" + id)
                 .retrieve().bodyToMono(JsonNode.class).block();
-        
         String name = block.get("name").asText();
-
         return name;
     }
 
-    private List<?> getTransaction(String iban) {
+    /**
+     * Call Transaction Microservice and Find all transaction that belong to the
+     * account give
+     *
+     * @param iban account number of the customer
+     * @return All transaction that belong this account
+     */
+    private List<?> getTransactions(String iban) {
         WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
-                .baseUrl("http://localhost:8082/transaction/")
+                .baseUrl("http://localhost:8082/transaction")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultUriVariables(Collections.singletonMap("url", "http://localhost:8082/transaction/"))
-                .build();
-
-        List<?> transactions = build.method(HttpMethod.GET).uri(uriBuilder -> uriBuilder
+                .build();       
+        
+        Optional<List<?>> transactionsOptional = Optional.ofNullable(build.method(HttpMethod.GET)
+        .uri(uriBuilder -> uriBuilder
                 .path("/customer/transactions")
-                .queryParam("ibanAccount", iban).
-                build())
-                .retrieve().bodyToFlux(Object.class).collectList().block();
+                .queryParam("ibanAccount", iban)
+                .build())
+        .retrieve()
+        .bodyToFlux(Object.class)
+        .collectList()
+        .block());       
 
-        return transactions;
+        return transactionsOptional.orElse(Collections.emptyList());
     }
 
 }
