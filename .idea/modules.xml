@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/paymentchain.iml" filepath="$PROJECT_DIR$/.idea/paymentchain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/paymentchainparent/businessdomain/transaction/transaction.iml" filepath="$PROJECT_DIR$/paymentchainparent/businessdomain/transaction/transaction.iml" />
     </modules>
   </component>
 </project>
