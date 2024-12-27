@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import com.paymentchain.product.respository.ProductRepository;
 import java.util.Optional;
+import org.springframework.http.HttpStatus;
 
 /**
  *
@@ -37,8 +38,13 @@ public class ProductRestController {
     }
     
     @GetMapping("/{id}")
-    public Product get(@PathVariable(name = "id") long id) {
-        return productRepository.findById(id).get();
+    public ResponseEntity<Optional<Product>> get(@PathVariable(name = "id") long id) {
+        Optional<Product> findById = productRepository.findById(id);
+        if (findById.isPresent()) {
+            return ResponseEntity.ok(findById);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); 
+        }
     }
     
     @PutMapping("/{id}")
