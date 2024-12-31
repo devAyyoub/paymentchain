@@ -14,9 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -33,11 +30,17 @@ public class BusinessTransactionTransaction {
         return transactionRepository.findAll();
     }
 
-    public ResponseEntity<Transaction> get(@PathVariable(name = "id") long id) {
-        return transactionRepository.findById(id).map(x -> ResponseEntity.ok(x)).orElse(ResponseEntity.notFound().build());
+    public Optional<Transaction> get(long id) throws BusinessRuleException {
+        //return transactionRepository.findById(id).map(x -> ResponseEntity.ok(x)).orElse(ResponseEntity.notFound().build());
+        Optional<Transaction> findById = transactionRepository.findById(id);
+        if(findById.isPresent()){
+            return findById;
+        } else {
+            throw new BusinessRuleException("1025", "Error validacion, transacción con id " + id + " no existe", HttpStatus.PRECONDITION_FAILED);
+        }
     }
 
-    public List<Transaction> get(@RequestParam(name = "ibanAccount") String ibanAccount) throws BusinessRuleException {
+    public List<Transaction> get( String ibanAccount) throws BusinessRuleException {
         List<Transaction> findByIbanAccount = transactionRepository.findByIbanAccount(ibanAccount);
         if (findByIbanAccount.isEmpty()) {
             throw new BusinessRuleException("1023", "Iban y canal deben ser rellenados", HttpStatus.BAD_REQUEST);
@@ -46,7 +49,7 @@ public class BusinessTransactionTransaction {
         }
     }
 
-    public ResponseEntity<?> put(@PathVariable(name = "id") long id, @RequestBody Transaction input) {
+    public ResponseEntity<?> put(long id,  Transaction input) {
         Transaction find = transactionRepository.findById(id).get();
         if (find != null) {
             find.setAmount(input.getAmount());
@@ -116,10 +119,12 @@ public class BusinessTransactionTransaction {
         return ResponseEntity.ok(savedTransaction);
     }
 
-    public ResponseEntity<?> delete(@PathVariable(name = "id") long id) {
+    public ResponseEntity<?> delete(long id) throws BusinessRuleException {
         Optional<Transaction> findById = transactionRepository.findById(id);
-        if (findById.get() != null) {
+        if (findById.isPresent()) {
             transactionRepository.delete(findById.get());
+        } else {
+            throw new BusinessRuleException("1025", "Error validacion, transacción con id " + id + " no existe", HttpStatus.PRECONDITION_FAILED);
         }
         return ResponseEntity.ok().build();
     }

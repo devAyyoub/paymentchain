@@ -11,6 +11,7 @@ import com.paymentchain.transactions.exception.BusinessRuleException;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,7 +39,7 @@ public class TransactionRestController {
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity<Transaction> get(@PathVariable(name = "id") long id) {
+    public Optional<Transaction> get(@PathVariable(name = "id") long id) throws BusinessRuleException {
          return bt.get(id);
     }
     
@@ -58,7 +59,7 @@ public class TransactionRestController {
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable(name = "id") long id) {
+    public ResponseEntity<?> delete(@PathVariable(name = "id") long id) throws BusinessRuleException {
         return bt.delete(id);
     }
     
