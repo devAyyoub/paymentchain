@@ -14,7 +14,7 @@ import lombok.Data;
 
 /**
  *
- * @author sotobotero
+ * @author ayyoub
  */
 @Data
 @Entity
@@ -31,4 +31,5 @@ public class Transaction {
    private String description;
    private String status;
    private String channel;   
+   private double balanceAfterTransaction; 
 }

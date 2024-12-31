@@ -5,12 +5,12 @@
  */
 package com.paymentchain.transactions.controller;
 
+import com.paymentchain.transactions.business.transactions.BusinessTransactionTransaction;
 import com.paymentchain.transactions.entities.Transaction;
-import com.paymentchain.transactions.respository.TransactionRepository;
+import com.paymentchain.transactions.exception.BusinessRuleException;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,61 +23,43 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
- * @author sotobotero
+ * @author ayyoub
  */
 @RestController
 @RequestMapping("/transaction")
 public class TransactionRestController {
     
     @Autowired
-    TransactionRepository transactionRepository;
-    
+    BusinessTransactionTransaction bt;
       
     @GetMapping()
     public List<Transaction> list() {
-        return transactionRepository.findAll();
+        return bt.list();
     }
     
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> get(@PathVariable(name = "id") long id) {
-         return transactionRepository.findById(id).map(x -> ResponseEntity.ok(x)).orElse(ResponseEntity.notFound().build());      
+         return bt.get(id);
     }
     
     @GetMapping("/customer/transactions")
-    public List<Transaction> get(@RequestParam(name = "ibanAccount") String ibanAccount) {
-      return transactionRepository.findByIbanAccount(ibanAccount);      
+    public List<Transaction> get(@RequestParam(name = "ibanAccount") String ibanAccount) throws BusinessRuleException {
+      return bt.get(ibanAccount);
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<?> put(@PathVariable(name = "id") long id, @RequestBody Transaction input) {
-        Transaction find = transactionRepository.findById(id).get();
-        if (find != null) {
-            find.setAmount(input.getAmount());
-            find.setChannel(input.getChannel());
-            find.setDate(input.getDate());
-            find.setDescription(input.getDescription());
-            find.setFee(input.getFee());
-            find.setIbanAccount(input.getIbanAccount());
-            find.setReference(input.getReference());
-            find.setStatus(input.getStatus());
-        }
-        Transaction save = transactionRepository.save(find);
-        return ResponseEntity.ok(save);
+        return bt.put(id, input);
     }
     
     @PostMapping
-    public ResponseEntity<?> post(@RequestBody Transaction input) {
-        Transaction save = transactionRepository.save(input);
-        return ResponseEntity.ok(save);
+    public ResponseEntity<?> post(@RequestBody Transaction input) throws BusinessRuleException {
+        return bt.post(input);
     }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(name = "id") long id) {
-        Optional<Transaction> findById = transactionRepository.findById(id);   
-        if(findById.get() != null){               
-                  transactionRepository.delete(findById.get());  
-        }
-        return ResponseEntity.ok().build();
+        return bt.delete(id);
     }
     
 }

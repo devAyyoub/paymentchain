@@ -17,22 +17,22 @@ import lombok.Data;
 
 /**
  *
- * @author sotobotero
+ * @author ayyoub
  */
 @Data
 @Entity
 public class CustomerProduct {
-    
-       @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private long productId;
     @Transient
     private String productName;
-    
+
     @JsonIgnore//it is necesary for avoid infinite recursion
-    @ManyToOne(fetch = FetchType.LAZY,targetEntity = Customer.class)
-    @JoinColumn(name = "customerId", nullable = true)   
-    private Customer customer;      
-    
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = Customer.class)
+    @JoinColumn(name = "customerId", nullable = true)
+    private Customer customer;
+
 }
