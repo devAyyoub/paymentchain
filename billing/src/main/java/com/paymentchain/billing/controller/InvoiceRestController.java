@@ -1,17 +1,20 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/springframework/RestController.java to edit this template
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package com.paymentchain.billing.controller;
 
+
+import com.paymentchain.billing.common.InvoiceRequestMapper;
+import com.paymentchain.billing.common.InvoiceResponseMapper;
+import com.paymentchain.billing.dto.InvoiceRequest;
+import com.paymentchain.billing.dto.InvoiceResponse;
 import com.paymentchain.billing.entities.Invoice;
-import com.paymentchain.billing.repository.InvoiceRepository;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,11 +22,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import com.paymentchain.billing.respository.InvoiceRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+
+import java.util.Optional;
 
 /**
  *
  * @author ayyoub
  */
+@Tag(name = "Billing API", description = "This APi serve all functionality for management Invoices")
 @RestController
 @RequestMapping("/billing")
 public class InvoiceRestController {
@@ -31,40 +43,55 @@ public class InvoiceRestController {
     @Autowired
     InvoiceRepository billingRepository;
     
+    @Autowired
+    InvoiceRequestMapper irm;
+    
+    @Autowired
+    InvoiceResponseMapper irsm;
+    
+    @Operation(description = "Return all invoices bundled into Response", summary ="Return 204 if no data found")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200",description = "Exito"),
+    @ApiResponse(responseCode = "500", description = "Internal error")})
+    
     @GetMapping()
-    public List<Invoice> list() {
-        return billingRepository.findAll();
-    }
+    public List<InvoiceResponse> list() {
+        List<Invoice> findAll = billingRepository.findAll();
+         return irsm.InvoiceListToInvoiceResponseList(findAll);       
+    } 
     
     @GetMapping("/{id}")
-    public ResponseEntity get(@PathVariable long id) {
-        Optional<Invoice> invoice = billingRepository.findById(id);
-        if (invoice.isPresent()) {
-            return new ResponseEntity<>(invoice.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public Invoice get(@PathVariable String id) {
+        Optional<Invoice> findById = billingRepository.findById(Long.valueOf(id));
+        return findById.get();
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@PathVariable String id, @RequestBody Object input) {
-        return null;
+    public ResponseEntity<?> put(@PathVariable String id, @RequestBody InvoiceRequest input) {
+       Invoice save = null; 
+        Optional<Invoice> findById = billingRepository.findById(Long.valueOf(id));
+        Invoice get = findById.get();
+        if(get != null){             
+                    save = billingRepository.save(get);  
+        }
+        return ResponseEntity.ok(save);
     }
     
     @PostMapping
-    public ResponseEntity<?> post(@RequestBody Invoice input) {
-        Invoice save = billingRepository.save(input);
-        return ResponseEntity.ok(save);
+    public ResponseEntity<?> post(@RequestBody InvoiceRequest input) { 
+        Invoice InvoiceRequestToInvoice = irm.InvoiceRequestToInvoice(input); 
+        Invoice save = billingRepository.save(InvoiceRequestToInvoice);
+        InvoiceResponse InvoiceToInvoiceResponse = irsm.InvoiceToInvoiceResponse(save);
+        return ResponseEntity.ok(InvoiceToInvoiceResponse );
     }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
-        Optional<Invoice> dto = billingRepository.findById(Long.valueOf(id));
-        if (!dto.isPresent()) {
-            return ResponseEntity.notFound().build();
+          Invoice save = null; 
+        Optional<Invoice> findById = billingRepository.findById(Long.valueOf(id));
+        Invoice get = findById.get();
+        if(get != null){               
+                  billingRepository.delete(get);  
         }
-        billingRepository.delete(dto.get());
         return ResponseEntity.ok().build();
     }
-    
 }

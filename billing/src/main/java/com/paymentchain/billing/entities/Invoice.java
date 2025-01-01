@@ -1,21 +1,22 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package com.paymentchain.billing.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import lombok.Data;
+
 
 
 /**
  *
  * @author ayyoub
  */
-
 @Entity
 @Data
 public class Invoice {
@@ -25,5 +26,5 @@ public class Invoice {
     private long customerId;
     private String number;
     private String detail;
-    private double amount;
+    private double amount; 
 }
