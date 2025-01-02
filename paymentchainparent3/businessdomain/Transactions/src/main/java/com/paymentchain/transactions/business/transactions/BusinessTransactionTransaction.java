@@ -4,6 +4,10 @@
  */
 package com.paymentchain.transactions.business.transactions;
 
+import com.paymentchain.transactions.common.TransactionRequestMapper;
+import com.paymentchain.transactions.common.TransactionResponseMapper;
+import com.paymentchain.transactions.dto.TransactionRequest;
+import com.paymentchain.transactions.dto.TransactionResponse;
 import com.paymentchain.transactions.entities.Transaction;
 import com.paymentchain.transactions.exception.BusinessRuleException;
 import com.paymentchain.transactions.respository.TransactionRepository;
@@ -24,48 +28,59 @@ public class BusinessTransactionTransaction {
 
     @Autowired
     TransactionRepository transactionRepository;
+    
+    @Autowired
+    TransactionRequestMapper trm;
+    
+    @Autowired
+    TransactionResponseMapper trsm;
 
     @GetMapping()
     public List<Transaction> list() {
         return transactionRepository.findAll();
     }
 
-    public Optional<Transaction> get(long id) throws BusinessRuleException {
+    public TransactionResponse get(long id) throws BusinessRuleException {
         //return transactionRepository.findById(id).map(x -> ResponseEntity.ok(x)).orElse(ResponseEntity.notFound().build());
         Optional<Transaction> findById = transactionRepository.findById(id);
         if(findById.isPresent()){
-            return findById;
+            TransactionResponse response = trsm.TransactionToTransactionResponse(findById.get());
+            return response;
         } else {
             throw new BusinessRuleException("1025", "Error validacion, transacción con id " + id + " no existe", HttpStatus.PRECONDITION_FAILED);
         }
     }
 
-    public List<Transaction> get( String ibanAccount) throws BusinessRuleException {
+    public List<TransactionResponse> get( String ibanAccount) throws BusinessRuleException {
         List<Transaction> findByIbanAccount = transactionRepository.findByIbanAccount(ibanAccount);
         if (findByIbanAccount.isEmpty()) {
             throw new BusinessRuleException("1023", "Iban y canal deben ser rellenados", HttpStatus.BAD_REQUEST);
         } else {
-            return findByIbanAccount;
+            List<TransactionResponse> response = trsm.TransactionListToTransactionResponseList(findByIbanAccount);
+            return response;
         }
     }
 
-    public ResponseEntity<?> put(long id,  Transaction input) {
+    public ResponseEntity<TransactionResponse> put(long id,  TransactionRequest input) {
+        Transaction transactionReqToTransation = trm.TransactionRequestToTransaction(input);
         Transaction find = transactionRepository.findById(id).get();
         if (find != null) {
-            find.setAmount(input.getAmount());
-            find.setChannel(input.getChannel());
-            find.setDate(input.getDate());
-            find.setDescription(input.getDescription());
-            find.setFee(input.getFee());
-            find.setIbanAccount(input.getIbanAccount());
-            find.setReference(input.getReference());
-            find.setStatus(input.getStatus());
+            find.setAmount(transactionReqToTransation.getAmount());
+            find.setChannel(transactionReqToTransation.getChannel());
+            find.setDate(transactionReqToTransation.getDate());
+            find.setDescription(transactionReqToTransation.getDescription());
+            find.setFee(transactionReqToTransation.getFee());
+            find.setIbanAccount(transactionReqToTransation.getIbanAccount());
+            find.setReference(transactionReqToTransation.getReference());
+            find.setStatus(transactionReqToTransation.getStatus());
         }
         Transaction save = transactionRepository.save(find);
-        return ResponseEntity.ok(save);
+        TransactionResponse transactionToTransactionResp = trsm.TransactionToTransactionResponse(save);
+        return ResponseEntity.ok(transactionToTransactionResp);
     }
 
-    public ResponseEntity<?> post(Transaction input) throws BusinessRuleException {
+    public ResponseEntity<TransactionResponse> post(TransactionRequest inputRequest) throws BusinessRuleException {
+        Transaction input = trm.TransactionRequestToTransaction(inputRequest);
         if (input.getIbanAccount() == null || input.getIbanAccount().isBlank()
                 || input.getChannel() == null || input.getChannel().isBlank()) {
             throw new BusinessRuleException("1023", "Iban y canal deben ser rellenados", HttpStatus.BAD_REQUEST);
@@ -116,7 +131,8 @@ public class BusinessTransactionTransaction {
 
         // Guardar la transacción
         Transaction savedTransaction = transactionRepository.save(input);
-        return ResponseEntity.ok(savedTransaction);
+        TransactionResponse transactionToTransactionResponse = trsm.TransactionToTransactionResponse(savedTransaction);
+        return ResponseEntity.ok(transactionToTransactionResponse);
     }
 
     public ResponseEntity<?> delete(long id) throws BusinessRuleException {

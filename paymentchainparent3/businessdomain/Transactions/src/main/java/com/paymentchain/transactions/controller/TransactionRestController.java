@@ -6,12 +6,13 @@
 package com.paymentchain.transactions.controller;
 
 import com.paymentchain.transactions.business.transactions.BusinessTransactionTransaction;
+import com.paymentchain.transactions.dto.TransactionRequest;
+import com.paymentchain.transactions.dto.TransactionResponse;
 import com.paymentchain.transactions.entities.Transaction;
 import com.paymentchain.transactions.exception.BusinessRuleException;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,22 +40,22 @@ public class TransactionRestController {
     }
     
     @GetMapping("/{id}")
-    public Optional<Transaction> get(@PathVariable(name = "id") long id) throws BusinessRuleException {
+    public TransactionResponse get(@PathVariable(name = "id") long id) throws BusinessRuleException {
          return bt.get(id);
     }
     
     @GetMapping("/customer/transactions")
-    public List<Transaction> get(@RequestParam(name = "ibanAccount") String ibanAccount) throws BusinessRuleException {
+    public List<TransactionResponse> get(@RequestParam(name = "ibanAccount") String ibanAccount) throws BusinessRuleException {
       return bt.get(ibanAccount);
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@PathVariable(name = "id") long id, @RequestBody Transaction input) {
+    public ResponseEntity<TransactionResponse> put(@PathVariable(name = "id") long id, @RequestBody TransactionRequest input) {
         return bt.put(id, input);
     }
     
     @PostMapping
-    public ResponseEntity<?> post(@RequestBody Transaction input) throws BusinessRuleException {
+    public ResponseEntity<TransactionResponse> post(@RequestBody TransactionRequest input) throws BusinessRuleException {
         return bt.post(input);
     }
     
