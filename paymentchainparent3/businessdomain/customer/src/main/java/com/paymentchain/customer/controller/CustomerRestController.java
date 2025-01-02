@@ -45,12 +45,6 @@ public class CustomerRestController {
     BusinessTransactionCustomer bt;
 
     @Autowired
-    CustomerRequestMapper crm;
-
-    @Autowired
-    CustomerResponseMapper crsm;
-
-    @Autowired
     private Environment env;
 
     @GetMapping("/check")
