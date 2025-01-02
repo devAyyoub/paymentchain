@@ -5,6 +5,10 @@
 package com.paymentchain.customer.business.transactions;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.paymentchain.customer.common.CustomerRequestMapper;
+import com.paymentchain.customer.common.CustomerResponseMapper;
+import com.paymentchain.customer.dto.CustomerRequest;
+import com.paymentchain.customer.dto.CustomerResponse;
 import com.paymentchain.customer.entities.Customer;
 import com.paymentchain.customer.entities.CustomerProduct;
 import com.paymentchain.customer.exception.BusinessRuleException;
@@ -27,8 +31,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -47,6 +53,12 @@ public class BusinessTransactionCustomer {
     @Autowired
     CustomerRepository customerRepository;
 
+    @Autowired
+    CustomerRequestMapper crm;
+
+    @Autowired
+    CustomerResponseMapper crsm;
+
     //webClient requires HttpClient library to work propertly     
     HttpClient client = HttpClient.create()
             //Connection Timeout: is a period within which a connection between a client and a server must be established
@@ -63,7 +75,7 @@ public class BusinessTransactionCustomer {
                 connection.addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
             });
 
-    public Customer get(@RequestParam(name = "code") String code) {
+    /*public Customer get(String code) {
         Customer customer = customerRepository.findByCode(code);
         if (customer != null) {
             List<CustomerProduct> products = customer.getProducts();
@@ -83,9 +95,51 @@ public class BusinessTransactionCustomer {
 
         }
         return customer;
+    }*/
+    public CustomerResponse get(String code) throws BusinessRuleException {
+        // Buscar el cliente por su código
+        Customer customer = customerRepository.findByCode(code);
+        if (customer == null) {
+            throw new BusinessRuleException(
+                            "1025",
+                            "Error validación, customer con codigo " + code+ " no existe",
+                            HttpStatus.PRECONDITION_FAILED
+                    );
+        }
+
+        // Procesar productos del cliente
+        List<CustomerProduct> products = customer.getProducts();
+        if (products != null) {
+            products.forEach(product -> {
+                try {
+                    String productName = getProductName(product.getProductId());
+                    product.setProductName(productName);
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(BusinessTransactionCustomer.class.getName()).log(Level.SEVERE, null, ex);
+                    product.setProductName("Unknown"); // Asignar un valor por defecto si hay error
+                }
+            });
+        }
+
+        // Buscar todas las transacciones asociadas con el IBAN del cliente
+        List<?> transactions = getTransactions(customer.getIban());
+        customer.setTransactions(transactions);
+
+        // Convertir el Customer a CustomerResponse
+        return crsm.CustomerToCustomerResponse(customer);
     }
 
-    public Customer post(Customer input) throws BusinessRuleException, UnknownHostException {
+    public ResponseEntity<CustomerResponse> get(long id) {
+        Optional<Customer> findById = customerRepository.findById(id);
+        if (findById.isPresent()) {
+            CustomerResponse response = crsm.CustomerToCustomerResponse(findById.get());
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    /*public Customer post(Customer input) throws BusinessRuleException, UnknownHostException {
         if (input.getProducts() != null) {
             for (Iterator<CustomerProduct> it = input.getProducts().iterator(); it.hasNext();) {
                 CustomerProduct dto = it.next();
@@ -100,6 +154,34 @@ public class BusinessTransactionCustomer {
         }
         Customer save = customerRepository.save(input);
         return save;
+    }*/
+    public ResponseEntity<CustomerResponse> post(CustomerRequest input) throws BusinessRuleException, UnknownHostException {
+        // Mapear el DTO a la entidad
+        Customer customer = crm.CustomerRequestToCustomer(input);
+
+        // Validar los productos
+        if (customer.getProducts() != null) {
+            for (CustomerProduct product : customer.getProducts()) {
+                String productName = getProductName(product.getProductId());
+                if (productName.isBlank()) {
+                    throw new BusinessRuleException(
+                            "1025",
+                            "Error validación, producto con id " + product.getProductId() + " no existe",
+                            HttpStatus.PRECONDITION_FAILED
+                    );
+                } else {
+                    product.setCustomer(customer);
+                }
+            }
+        }
+
+        // Guardar el cliente en la base de datos
+        Customer savedCustomer = customerRepository.save(customer);
+
+        // Mapear la entidad guardada a la respuesta DTO
+        CustomerResponse response = crsm.CustomerToCustomerResponse(savedCustomer);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     /**

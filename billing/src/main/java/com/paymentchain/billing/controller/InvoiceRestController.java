@@ -70,10 +70,15 @@ public class InvoiceRestController {
        Invoice save = null; 
         Optional<Invoice> findById = billingRepository.findById(Long.valueOf(id));
         Invoice get = findById.get();
-        if(get != null){             
-                    save = billingRepository.save(get);  
+        if(get != null){   
+               get.setAmount(input.getAmount());
+               get.setDetail(input.getDetail());
+               get.setCustomerId(input.getCustomer());
+               get.setNumber(input.getNumber());
+                    save = billingRepository.save(get);                      
         }
-        return ResponseEntity.ok(save);
+          InvoiceResponse InvoiceToInvoiceRespose = irsm.InvoiceToInvoiceResponse(save);
+        return ResponseEntity.ok(InvoiceToInvoiceRespose);
     }
     
     @PostMapping

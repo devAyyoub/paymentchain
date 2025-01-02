@@ -6,6 +6,10 @@
 package com.paymentchain.customer.controller;
 
 import com.paymentchain.customer.business.transactions.BusinessTransactionCustomer;
+import com.paymentchain.customer.common.CustomerRequestMapper;
+import com.paymentchain.customer.common.CustomerResponseMapper;
+import com.paymentchain.customer.dto.CustomerRequest;
+import com.paymentchain.customer.dto.CustomerResponse;
 import com.paymentchain.customer.entities.Customer;
 import com.paymentchain.customer.exception.BusinessRuleException;
 import com.paymentchain.customer.respository.CustomerRepository;
@@ -36,9 +40,15 @@ public class CustomerRestController {
 
     @Autowired
     CustomerRepository customerRepository;
-    
+
     @Autowired
     BusinessTransactionCustomer bt;
+
+    @Autowired
+    CustomerRequestMapper crm;
+
+    @Autowired
+    CustomerResponseMapper crsm;
 
     @Autowired
     private Environment env;
@@ -59,13 +69,8 @@ public class CustomerRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> get(@PathVariable(name = "id") long id) {
-        Optional<Customer> findById = customerRepository.findById(id);
-        if (findById.isPresent()) {
-            return ResponseEntity.ok(findById);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseEntity<CustomerResponse> get(@PathVariable(name = "id") long id) {
+        return bt.get(id);
     }
 
     @PutMapping("/{id}")
@@ -83,9 +88,9 @@ public class CustomerRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> post(@RequestBody Customer input) throws BusinessRuleException, UnknownHostException {
-        Customer post = bt.post(input);
-        return ResponseEntity.status(HttpStatus.CREATED).body(post);
+    public ResponseEntity<CustomerResponse> post(@RequestBody CustomerRequest input) throws BusinessRuleException, UnknownHostException {
+        // Delegar la lógica al servicio y devolver la respuesta directamente
+        return bt.post(input);
     }
 
     @DeleteMapping("/{id}")
@@ -98,8 +103,8 @@ public class CustomerRestController {
     }
 
     @GetMapping("/full")
-    public Customer getByCode(@RequestParam(name = "code") String code) {
-        Customer customer = bt.get(code);      
+    public CustomerResponse getByCode(@RequestParam(name = "code") String code) throws BusinessRuleException {
+        CustomerResponse customer = bt.get(code);
         return customer;
     }
 

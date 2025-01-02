@@ -26,7 +26,7 @@
         <org.lombok.version>1.18.30</org.lombok.version>    
         <org.springdoc.version>2.3.0</org.springdoc.version>     
         <org.mockito.version>5.7.0</org.mockito.version>
-         
+        <mapstruct.version>1.5.3.Final</mapstruct.version>
     </properties>
     
     <dependencyManagement>
@@ -110,5 +110,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-    </dependencies>     
+    </dependencies>
+        
 </project>
