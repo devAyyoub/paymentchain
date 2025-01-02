@@ -18,6 +18,6 @@ public class ProductRequest {
     @Schema(name = "code", required = true, example = "3", defaultValue = "8", description = "Product's code")
     private String code;
     
-    @Schema(name = "name", required = true, example = "3", defaultValue = "8", description = "Product's name")
+    @Schema(name = "name", required = true, example = "product", defaultValue = "product", description = "Product's name")
     private String name;
 }

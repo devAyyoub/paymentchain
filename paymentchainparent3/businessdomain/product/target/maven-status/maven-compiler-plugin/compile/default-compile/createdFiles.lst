@@ -1,7 +1,13 @@
+com/paymentchain/product/common/ProductResponseMapper.class
 com/paymentchain/product/business/transactions/BusinessTransactionProduct.class
-com/paymentchain/product/respository/ProductRepository.class
-com/paymentchain/product/exception/ApiExceptionHandler.class
 com/paymentchain/product/controller/ProductRestController.class
+com/paymentchain/product/common/ProductResponseMapperImpl.class
+com/paymentchain/product/common/ProductRequestMapperImpl.class
+com/paymentchain/product/dto/ProductRequest.class
+com/paymentchain/product/respository/ProductRepository.class
+com/paymentchain/product/dto/ProductResponse.class
+com/paymentchain/product/exception/ApiExceptionHandler.class
+com/paymentchain/product/common/ProductRequestMapper.class
 com/paymentchain/product/entities/Product.class
 com/paymentchain/product/common/StandarizedApiExceptionResponse.class
 com/paymentchain/product/ProductApplication.class

@@ -9,8 +9,6 @@ import com.paymentchain.product.entities.Product;
 import java.util.List;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
 
 /**
  *
@@ -19,14 +17,14 @@ import org.mapstruct.Mappings;
 @Mapper(componentModel = "spring") 
 public interface ProductRequestMapper {
 
-    Product InvoiceRequestToInvoice(ProductRequest source);
+    Product ProductRequestToProduct(ProductRequest source);
 
-    List<Product> InvoiceRequestListToInvoiceList(List<ProductRequest> source);
+    List<Product> ProductRequestListToProductList(List<ProductRequest> source);
     
     @InheritInverseConfiguration
-    ProductRequest InvoiceToInvoiceRequest(Product source);
+    ProductRequest ProductToProductRequest(Product source);
     
     @InheritInverseConfiguration
-    List<ProductRequest> InvoiceListToInvoiceRequestList(List<Product> source);
+    List<ProductRequest> ProductListToProductRequestList(List<Product> source);
 
 }

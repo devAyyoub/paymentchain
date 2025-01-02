@@ -6,7 +6,8 @@
 package com.paymentchain.product.controller;
 
 import com.paymentchain.product.business.transactions.BusinessTransactionProduct;
-import com.paymentchain.product.entities.Product;
+import com.paymentchain.product.dto.ProductRequest;
+import com.paymentchain.product.dto.ProductResponse;
 import com.paymentchain.product.exception.BusinessRuleException;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import java.util.Optional;
 
 /**
  *
@@ -33,27 +33,27 @@ public class ProductRestController {
     BusinessTransactionProduct bt;
 
     @GetMapping()
-    public List<Product> list() throws BusinessRuleException {
+    public List<ProductResponse> list() throws BusinessRuleException {
         return bt.list();
     }
 
     @GetMapping("/{id}")
-    public Optional<Product> get(@PathVariable(name = "id") long id) throws BusinessRuleException {
+    public ResponseEntity<ProductResponse> get(@PathVariable(name = "id") long id) throws BusinessRuleException {
         return bt.get(id);      
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@PathVariable(name = "id") long id, @RequestBody Product input) {
+    public ResponseEntity<ProductResponse> put(@PathVariable(name = "id") long id, @RequestBody ProductRequest input) {
         return bt.put(id, input);
     }
 
     @PostMapping
-    public ResponseEntity<?> post(@RequestBody Product input) throws BusinessRuleException {
+    public ResponseEntity<ProductResponse> post(@RequestBody ProductRequest input) throws BusinessRuleException {
         return bt.post(input);
     }
 
     @DeleteMapping("/{id}")
-    public Optional<Product> delete(@PathVariable(name = "id") long id) throws BusinessRuleException {
+    public ProductResponse delete(@PathVariable(name = "id") long id) throws BusinessRuleException {
         return bt.delete(id);
     }
 
