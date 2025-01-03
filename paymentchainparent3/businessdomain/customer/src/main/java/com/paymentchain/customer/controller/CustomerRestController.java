@@ -6,8 +6,6 @@
 package com.paymentchain.customer.controller;
 
 import com.paymentchain.customer.business.transactions.BusinessTransactionCustomer;
-import com.paymentchain.customer.common.CustomerRequestMapper;
-import com.paymentchain.customer.common.CustomerResponseMapper;
 import com.paymentchain.customer.dto.CustomerRequest;
 import com.paymentchain.customer.dto.CustomerResponse;
 import com.paymentchain.customer.entities.Customer;
