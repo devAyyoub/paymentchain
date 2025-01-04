@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 
 /**
  *
- * @author sotobotero
+ * @author ayyoub
  */
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     
