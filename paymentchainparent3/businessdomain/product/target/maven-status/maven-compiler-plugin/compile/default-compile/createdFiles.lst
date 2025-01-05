@@ -9,6 +9,7 @@ com/paymentchain/product/dto/ProductResponse.class
 com/paymentchain/product/exception/ApiExceptionHandler.class
 com/paymentchain/product/common/ProductRequestMapper.class
 com/paymentchain/product/entities/Product.class
+com/paymentchain/product/common/SecurityConfiguration.class
 com/paymentchain/product/common/StandarizedApiExceptionResponse.class
 com/paymentchain/product/ProductApplication.class
 com/paymentchain/product/exception/BusinessRuleException.class

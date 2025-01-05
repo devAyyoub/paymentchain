@@ -26,26 +26,34 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfiguration {
 
     private static final String[] NO_AUTH_LIST = {
-        "/v3/api-docs",//
-        "/configuration/ui", //
-        "/swagger-resources", //
-        "/configuration/security", //   
-        "/webjars/**", //
-        "/login",
-        "/h2-console/**"};
+        "/v3/api-docs/**",
+        "/swagger-ui/**",
+        "/swagger-resources/**",
+        "/swagger-ui.html",
+        "/configuration/ui",
+        "/configuration/security",
+        "/webjars/**",
+        "/h2-console/**"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         //Choose one configuration
 
         //01- Full security in order to ask by user and password before to acces swagger ui
-        http.csrf().disable().cors().and()
-                .authorizeHttpRequests()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .httpBasic(withDefaults())
-                .formLogin(withDefaults());
+//        http.csrf().disable().cors().and()
+//                .authorizeHttpRequests()
+//                .anyRequest()
+//                .authenticated()
+//                .and()
+//                .httpBasic(withDefaults())
+//                .formLogin(withDefaults());
+        http
+                .csrf().disable()
+                .cors().and()
+                .authorizeHttpRequests(authz -> authz
+                .anyRequest().permitAll() // Permitir todas las rutas
+                );
         return http.build();
         //02- Custom security configuration, we can excluse some paths and ask by user and password before each request to acces swagger ui
 //        http
@@ -70,22 +78,21 @@ public class SecurityConfiguration {
 //                .formLogin(withDefaults());
 //        return http.build();
     }
-    
+
     //This Handlers implement the CorsConfigurationSource interface in order to provide a CorsConfiguration for each request.
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cc = new CorsConfiguration();
-       
+
         cc.setAllowedHeaders(Arrays.asList("Origin,Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers", "Authorization"));
         cc.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
-       
-        cc.setAllowedOrigins(Arrays.asList("/*"));
-        
-        cc.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PUT", "PATCH"));
-        
-        cc.addAllowedOriginPattern("*");       
 
-        
+        cc.setAllowedOrigins(Arrays.asList("/*"));
+
+        cc.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "PUT", "PATCH"));
+
+        cc.addAllowedOriginPattern("*");
+
         cc.setMaxAge(Duration.ZERO);
         cc.setAllowCredentials(Boolean.TRUE);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

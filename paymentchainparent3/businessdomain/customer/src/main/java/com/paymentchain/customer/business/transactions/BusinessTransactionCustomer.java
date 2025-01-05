@@ -35,6 +35,7 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 /**
@@ -136,22 +137,6 @@ public class BusinessTransactionCustomer {
         }
     }
 
-    /*public Customer post(Customer input) throws BusinessRuleException, UnknownHostException {
-        if (input.getProducts() != null) {
-            for (Iterator<CustomerProduct> it = input.getProducts().iterator(); it.hasNext();) {
-                CustomerProduct dto = it.next();
-                String productName = getProductName(dto.getProductId());
-                if (productName.isBlank()) {
-                    BusinessRuleException bussinessRuleException = new BusinessRuleException("1025", "Error validacion, producto con id " + dto.getProductId() + " no existe", HttpStatus.PRECONDITION_FAILED);
-                    throw bussinessRuleException;
-                } else {
-                    dto.setCustomer(input);
-                }
-            }
-        }
-        Customer save = customerRepository.save(input);
-        return save;
-    }*/
     public ResponseEntity<CustomerResponse> post(CustomerRequest input) throws BusinessRuleException, UnknownHostException {
         // Mapear el DTO a la entidad
         Customer customer = crm.CustomerRequestToCustomer(input);
@@ -215,23 +200,50 @@ public class BusinessTransactionCustomer {
      * @param iban account number of the customer
      * @return All transaction that belong this account
      */
+//    private List<?> getTransactions(String iban) {
+//        WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
+//                .baseUrl("http://BUSINESSDOMAIN-TRANSACTION/transaction")
+//                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+//                .build();
+//
+//        Optional<List<?>> transactionsOptional = Optional.ofNullable(build.method(HttpMethod.GET)
+//                .uri(uriBuilder -> uriBuilder
+//                .path("/customer/transactions")
+//                .queryParam("ibanAccount", iban)
+//                .build())
+//                .retrieve()
+//                .bodyToFlux(Object.class)
+//                .collectList()
+//                .block());
+//
+//        return transactionsOptional.orElse(Collections.emptyList());
+//    }
     private List<?> getTransactions(String iban) {
+    try {
         WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
                 .baseUrl("http://BUSINESSDOMAIN-TRANSACTION/transaction")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
 
-        Optional<List<?>> transactionsOptional = Optional.ofNullable(build.method(HttpMethod.GET)
+        return build.method(HttpMethod.GET)
                 .uri(uriBuilder -> uriBuilder
-                .path("/customer/transactions")
-                .queryParam("ibanAccount", iban)
-                .build())
+                        .path("/customer/transactions")
+                        .queryParam("ibanAccount", iban)
+                        .build())
                 .retrieve()
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                        response -> response.createException().flatMap(Mono::error))
                 .bodyToFlux(Object.class)
                 .collectList()
-                .block());
-
-        return transactionsOptional.orElse(Collections.emptyList());
+                .onErrorResume(e -> {
+                    Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Error retrieving transactions", e);
+                    return Mono.just(Collections.emptyList());
+                })
+                .block();
+    } catch (Exception e) {
+        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Unexpected error", e);
+        return Collections.emptyList();
     }
+}
 
 }
