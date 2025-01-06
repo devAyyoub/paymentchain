@@ -7,6 +7,14 @@ services:
       - "8761:8761"
     environment:
       - JAVA_OPTS=-Xms256M -Xmx256M
+      
+  apigateway:
+    container_name: apigateway_container
+    image: apigateway_image:latest
+    ports:
+      - "8761:8761"
+    environment:
+      - JAVA_OPTS=-Xms256M -Xmx256M
 
   product-catalog:
     container_name: product_container
