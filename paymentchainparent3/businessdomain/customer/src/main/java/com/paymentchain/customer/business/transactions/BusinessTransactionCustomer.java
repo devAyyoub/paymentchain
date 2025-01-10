@@ -33,6 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -73,27 +74,6 @@ public class BusinessTransactionCustomer {
                 connection.addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
             });
 
-    /*public Customer get(String code) {
-        Customer customer = customerRepository.findByCode(code);
-        if (customer != null) {
-            List<CustomerProduct> products = customer.getProducts();
-
-            //for each product find it name
-            products.forEach(x -> {
-                try {
-                    String productName = getProductName(x.getProductId());
-                    x.setProductName(productName);
-                } catch (UnknownHostException ex) {
-                    Logger.getLogger(BusinessTransactionCustomer.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            });
-            //find all transactions that belong this account number
-            List<?> transactions = getTransactions(customer.getIban());
-            customer.setTransactions(transactions);
-
-        }
-        return customer;
-    }*/
     public CustomerResponse get(String code) throws BusinessRuleException {
         // Buscar el cliente por su código
         Customer customer = customerRepository.findByCode(code);
@@ -136,6 +116,7 @@ public class BusinessTransactionCustomer {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+    
 
     public ResponseEntity<CustomerResponse> post(CustomerRequest input) throws BusinessRuleException, UnknownHostException {
         // Mapear el DTO a la entidad
@@ -176,9 +157,9 @@ public class BusinessTransactionCustomer {
         String name = "";
         try {
             WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
-                    .baseUrl("http://BUSINESSDOMAIN-PRODUCT/product")
+                    .baseUrl("http://BUSINESSDOMAIN-PRODUCT/business-product/product")
                     .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .defaultUriVariables(Collections.singletonMap("url", "http://BUSINESSDOMAIN-PRODUCT/product"))
+                    .defaultUriVariables(Collections.singletonMap("url", "http://BUSINESSDOMAIN-PRODUCT/business-product/product"))
                     .build();
             JsonNode block = build.method(HttpMethod.GET).uri("/" + id)
                     .retrieve().bodyToMono(JsonNode.class).block();
@@ -200,28 +181,11 @@ public class BusinessTransactionCustomer {
      * @param iban account number of the customer
      * @return All transaction that belong this account
      */
-//    private List<?> getTransactions(String iban) {
-//        WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
-//                .baseUrl("http://BUSINESSDOMAIN-TRANSACTION/transaction")
-//                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-//                .build();
-//
-//        Optional<List<?>> transactionsOptional = Optional.ofNullable(build.method(HttpMethod.GET)
-//                .uri(uriBuilder -> uriBuilder
-//                .path("/customer/transactions")
-//                .queryParam("ibanAccount", iban)
-//                .build())
-//                .retrieve()
-//                .bodyToFlux(Object.class)
-//                .collectList()
-//                .block());
-//
-//        return transactionsOptional.orElse(Collections.emptyList());
-//    }
+
     private List<?> getTransactions(String iban) {
     try {
         WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
-                .baseUrl("http://BUSINESSDOMAIN-TRANSACTION/transaction")
+                .baseUrl("http://BUSINESSDOMAIN-TRANSACTION/business-transaction/transaction")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
 

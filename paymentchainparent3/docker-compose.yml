@@ -2,7 +2,9 @@ version: '3.8'
 services:
   registry-discovery:
     container_name: eureka_container
-    image: eureka_image:latest
+    image: eureka_image2:latest
+    networks:
+      - red-paymentchain
     ports:
       - "8761:8761"
     environment:
@@ -10,15 +12,20 @@ services:
       
   apigateway:
     container_name: apigateway_container
-    image: apigateway_image:latest
+    image: apigateway_image2:latest
+    networks:
+      - red-paymentchain
     ports:
-      - "8761:8761"
+      - "8081:8081"
     environment:
       - JAVA_OPTS=-Xms256M -Xmx256M
+      - EUREKA_SERVER=http://registry-discovery:8761/eureka/
 
   product-catalog:
     container_name: product_container
-    image: product_image:latest
+    image: product_image2:latest
+    networks:
+      - red-paymentchain
     environment:
       - JAVA_OPTS=-Xms256M -Xmx256M
       - EUREKA_SERVER=http://registry-discovery:8761/eureka/
@@ -29,18 +36,21 @@ services:
 
   customer:
     container_name: customer_container
-    image: customer_image:latest
+    image: customer_image2:latest
+    networks:
+      - red-paymentchain
     environment:
       - JAVA_OPTS=-Xms256M -Xmx256M
       - EUREKA_SERVER=http://registry-discovery:8761/eureka/
     depends_on:
       - registry-discovery
-    ports:
-      - "8080:8080"
+
       
   transactions:
     container_name: transaction_container
-    image: transaction_image:latest
+    image: transaction_image2:latest
+    networks:
+      - red-paymentchain
     environment:
       - JAVA_OPTS=-Xms256M -Xmx256M
       - EUREKA_SERVER=http://registry-discovery:8761/eureka/
@@ -52,6 +62,8 @@ services:
   postgres_db:
     container_name: postgres
     image: postgres:latest
+    networks:
+      - red-paymentchain
     ports:
       - "5432:5432"
     volumes:
@@ -64,6 +76,8 @@ services:
 
   pgadmin4:
     image: dpage/pgadmin4
+    networks:
+      - red-paymentchain
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
@@ -72,3 +86,8 @@ services:
       - "80:80"
     depends_on:
       - postgres_db
+
+networks:
+  red-paymentchain:
+    driver: bridge
+    attachable: true
