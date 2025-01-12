@@ -8,6 +8,11 @@
         <option value="$PROJECT_DIR$/paymentchainparent/pom.xml" />
       </list>
     </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/billing/pom.xml" />
+      </set>
+    </option>
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="homebrew-17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />

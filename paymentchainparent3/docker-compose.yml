@@ -9,7 +9,7 @@ services:
       - "8761:8761"
     environment:
       - JAVA_OPTS=-Xms256M -Xmx256M
-      
+
   apigateway:
     container_name: apigateway_container
     image: apigateway_image2:latest
@@ -44,8 +44,22 @@ services:
       - EUREKA_SERVER=http://registry-discovery:8761/eureka/
     depends_on:
       - registry-discovery
+  
+  keycloack:
+    container_name: keycloackAdapter
+    image: keycloack_image:latest  
+    networks:
+      - red-paymentchain
+    environment:
+      - JAVA_OPTS=-Xms256M -Xmx256M
+      - EUREKA_SERVER=http://registry-discovery:8761/eureka/
+      - KEYCLOACK_SERVER=http://keycloak_server:8080/realms/
+      - KEYCLOACK_REAL_ID=6T3ub7XK1v5b-Mc3LvpETAQnBWp0CjtBLojXTazR8YU
+    depends_on:
+      - registry-discovery
+    ports:
+      - "8088:8088"
 
-      
   transactions:
     container_name: transaction_container
     image: transaction_image2:latest
@@ -86,6 +100,19 @@ services:
       - "80:80"
     depends_on:
       - postgres_db
+
+  keycloak_server:
+    container_name: id-keycloakServer
+    image: quay.io/keycloak/keycloak:latest
+    networks:
+      - red-paymentchain
+    restart: always
+    ports:
+      - 8091:8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: [ "start-dev" ]
 
 networks:
   red-paymentchain:

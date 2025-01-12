@@ -2,8 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/paymentchain.iml" filepath="$PROJECT_DIR$/.idea/paymentchain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/paymentchainparent/businessdomain/businessdomain.iml" filepath="$PROJECT_DIR$/paymentchainparent/businessdomain/businessdomain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/paymentchainparent/infraestructuradomain/configServer/configserver.iml" filepath="$PROJECT_DIR$/paymentchainparent/infraestructuradomain/configServer/configserver.iml" />
+      <module fileurl="file://$PROJECT_DIR$/paymentchainparent/businessdomain/customer/customer.iml" filepath="$PROJECT_DIR$/paymentchainparent/businessdomain/customer/customer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/paymentchainparent/infraestructuradomain/infraestructuradomain.iml" filepath="$PROJECT_DIR$/paymentchainparent/infraestructuradomain/infraestructuradomain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/paymentchainparent/paymentchainparent.iml" filepath="$PROJECT_DIR$/paymentchainparent/paymentchainparent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/paymentchainparent/businessdomain/product/product.iml" filepath="$PROJECT_DIR$/paymentchainparent/businessdomain/product/product.iml" />
       <module fileurl="file://$PROJECT_DIR$/paymentchainparent/businessdomain/transaction/transaction.iml" filepath="$PROJECT_DIR$/paymentchainparent/businessdomain/transaction/transaction.iml" />
+      <module fileurl="file://$PROJECT_DIR$/paymentchainparent/businessdomain/Transactions/transactions.iml" filepath="$PROJECT_DIR$/paymentchainparent/businessdomain/Transactions/transactions.iml" />
     </modules>
   </component>
 </project>
