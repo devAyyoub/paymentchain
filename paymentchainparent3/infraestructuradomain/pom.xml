@@ -16,7 +16,7 @@
         <module>eurekaserver</module>
         <module>springBootAdmin</module>
         <module>apigateway</module>
-        <module>keycloackAdapter</module>
+        <module>keycloakAdapter</module>
     </modules>
     <properties>
        <!--spring cloud version, please check the table https://spring.io/projects/spring-cloud compatibility version with spring boot framework-->

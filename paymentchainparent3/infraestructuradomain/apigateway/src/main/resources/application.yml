@@ -13,14 +13,25 @@ logging:
   level:
     org.springframework.cloud.gateway: Debug
     reactor.netty.http.client: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.boot.web: DEBUG
+    org.springframework.cloud.gateway.filter: DEBUG
+    org.springframework.cloud.gateway.handler: DEBUG
+    com.paymentchain.setups: DEBUG
 spring:
   application:
     name: businessdomain-customer
   cloud:
     gateway:
       routes:
+      - id: customer_full
+        uri: lb://BUSINESSDOMAIN-CUSTOMER
+        predicates:
+        - Path=/business-customer/customer/V1/full
+        filters:
+        - name: AuthenticationFiltering
       - id: customer_service
-        uri: lb://businessdomain-customer
+        uri: lb://BUSINESSDOMAIN-CUSTOMER
         predicates:
         - Path=/business-customer/**
       - id: product_service

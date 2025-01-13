@@ -20,6 +20,7 @@ services:
     environment:
       - JAVA_OPTS=-Xms256M -Xmx256M
       - EUREKA_SERVER=http://registry-discovery:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
 
   product-catalog:
     container_name: product_container
@@ -42,19 +43,21 @@ services:
     environment:
       - JAVA_OPTS=-Xms256M -Xmx256M
       - EUREKA_SERVER=http://registry-discovery:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
     depends_on:
       - registry-discovery
   
-  keycloack:
-    container_name: keycloackAdapter
-    image: keycloack_image:latest  
+  keycloak:
+    container_name: keycloakAdapter
+    image: keycloak_image:latest  
     networks:
       - red-paymentchain
     environment:
       - JAVA_OPTS=-Xms256M -Xmx256M
       - EUREKA_SERVER=http://registry-discovery:8761/eureka/
-      - KEYCLOACK_SERVER=http://keycloak_server:8080/realms/
-      - KEYCLOACK_REAL_ID=6T3ub7XK1v5b-Mc3LvpETAQnBWp0CjtBLojXTazR8YU
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - KEYCLOAK_SERVER=http://keycloak_server:8080/realms/
+      - KEYCLOAK_REAL_ID=GjGGvoKmY2Pirbv-ZSao5wTEsm2hltFqraKWqxyPSCQ
     depends_on:
       - registry-discovery
     ports:
@@ -118,3 +121,4 @@ networks:
   red-paymentchain:
     driver: bridge
     attachable: true
+    external: true

@@ -33,7 +33,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -79,10 +78,10 @@ public class BusinessTransactionCustomer {
         Customer customer = customerRepository.findByCode(code);
         if (customer == null) {
             throw new BusinessRuleException(
-                            "1025",
-                            "Error validación, customer con codigo " + code+ " no existe",
-                            HttpStatus.PRECONDITION_FAILED
-                    );
+                    "1025",
+                    "Error validación, customer con codigo " + code + " no existe",
+                    HttpStatus.PRECONDITION_FAILED
+            );
         }
 
         // Procesar productos del cliente
@@ -116,7 +115,6 @@ public class BusinessTransactionCustomer {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-    
 
     public ResponseEntity<CustomerResponse> post(CustomerRequest input) throws BusinessRuleException, UnknownHostException {
         // Mapear el DTO a la entidad
@@ -181,33 +179,32 @@ public class BusinessTransactionCustomer {
      * @param iban account number of the customer
      * @return All transaction that belong this account
      */
-
     private List<?> getTransactions(String iban) {
-    try {
-        WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
-                .baseUrl("http://BUSINESSDOMAIN-TRANSACTION/business-transaction/transaction")
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .build();
+        try {
+            WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
+                    .baseUrl("http://BUSINESSDOMAIN-TRANSACTION/business-transaction/transaction")
+                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .build();
 
-        return build.method(HttpMethod.GET)
-                .uri(uriBuilder -> uriBuilder
-                        .path("/customer/transactions")
-                        .queryParam("ibanAccount", iban)
-                        .build())
-                .retrieve()
-                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> response.createException().flatMap(Mono::error))
-                .bodyToFlux(Object.class)
-                .collectList()
-                .onErrorResume(e -> {
-                    Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Error retrieving transactions", e);
-                    return Mono.just(Collections.emptyList());
-                })
-                .block();
-    } catch (Exception e) {
-        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Unexpected error", e);
-        return Collections.emptyList();
+            return build.method(HttpMethod.GET)
+                    .uri(uriBuilder -> uriBuilder
+                    .path("/customer/transactions")
+                    .queryParam("ibanAccount", iban)
+                    .build())
+                    .retrieve()
+                    .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                            response -> response.createException().flatMap(Mono::error))
+                    .bodyToFlux(Object.class)
+                    .collectList()
+                    .onErrorResume(e -> {
+                        Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Error retrieving transactions", e);
+                        return Mono.just(Collections.emptyList());
+                    })
+                    .block();
+        } catch (Exception e) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Unexpected error", e);
+            return Collections.emptyList();
+        }
     }
-}
 
 }

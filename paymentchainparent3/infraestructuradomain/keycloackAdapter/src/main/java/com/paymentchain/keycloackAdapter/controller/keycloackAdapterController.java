@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.paymentchain.keycloackAdapter.controller;
+package com.paymentchain.keycloakAdapter.controller;
 
-import com.paymentchain.keycloackAdapter.service.KeycloakRestService;
+import com.paymentchain.keycloakAdapter.service.KeycloakRestService;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwk.Jwk;
@@ -12,7 +12,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.paymentchain.exception.BussinesRuleException;
-import com.paymentchain.keycloackAdapter.service.JwtService;
+import com.paymentchain.keycloakAdapter.service.JwtService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +31,9 @@ import org.springframework.http.ResponseEntity;
  * @author ayyoub
  */
 @RestController
-public class keycloackAdapterController {
+public class keycloakAdapterController {
 
-    private Logger logger = LoggerFactory.getLogger(keycloackAdapterController.class);
+    private Logger logger = LoggerFactory.getLogger(keycloakAdapterController.class);
 
     @Autowired
     private KeycloakRestService restService;
