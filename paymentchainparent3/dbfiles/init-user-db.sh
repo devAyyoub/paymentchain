@@ -6,9 +6,8 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
     GRANT ALL PRIVILEGES ON DATABASE customer TO "$POSTGRES_USER";
 EOSQL
 
-# Crear la base de datos para el cliente (si no existe)
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-    CREATE DATABASE customer;
-    GRANT ALL PRIVILEGES ON DATABASE customer TO "$POSTGRES_USER";
+    CREATE DATABASE keycloak;
+    GRANT ALL PRIVILEGES ON DATABASE keycloak TO "$POSTGRES_USER";
 EOSQL
 
