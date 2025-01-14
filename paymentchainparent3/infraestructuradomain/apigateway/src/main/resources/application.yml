@@ -24,23 +24,27 @@ spring:
   cloud:
     gateway:
       routes:
-      - id: customer_full
-        uri: lb://BUSINESSDOMAIN-CUSTOMER
-        predicates:
-        - Path=/business-customer/customer/V1/full
-        filters:
-        - name: AuthenticationFiltering
+#      - id: customer_full
+#        uri: lb://BUSINESSDOMAIN-CUSTOMER
+#        predicates:
+#        - Path=/business-customer/customer/V1/full
       - id: customer_service
         uri: lb://BUSINESSDOMAIN-CUSTOMER
         predicates:
         - Path=/business-customer/**
+        filters:
+        - name: AuthenticationFiltering
       - id: product_service
         uri: lb://businessdomain-product
         predicates:
         - Path=/business-product/**
+        filters:
+        - name: AuthenticationFiltering
       - id: transaction_service
         uri: lb://businessdomain-transaction
         predicates:
         - Path=/business-transaction/**
+        filters:
+        - name: AuthenticationFiltering
     config:
        enabled: false 

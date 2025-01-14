@@ -57,7 +57,7 @@ services:
       - EUREKA_SERVER=http://registry-discovery:8761/eureka/
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
       - KEYCLOAK_SERVER=http://keycloak_server:8080/realms/
-      - KEYCLOAK_REAL_ID=GjGGvoKmY2Pirbv-ZSao5wTEsm2hltFqraKWqxyPSCQ
+      - KEYCLOAK_REAL_ID=Sg-SyKcNLOTcuu-MxlVU6_WgBArNZtsAmTDK-QoNVHM
     depends_on:
       - registry-discovery
     ports:
