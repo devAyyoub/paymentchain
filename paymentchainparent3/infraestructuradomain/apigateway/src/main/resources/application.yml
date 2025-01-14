@@ -20,7 +20,7 @@ logging:
     com.paymentchain.setups: DEBUG
 spring:
   application:
-    name: businessdomain-customer
+    name: apigateway
   cloud:
     gateway:
       routes:
