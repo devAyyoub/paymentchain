@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-01-13T22:23:21+0100",
-    comments = "version: 1.5.3.Final, compiler: Eclipse JDT (IDE) 3.41.0.v20241217-1506, environment: Java 17.0.13 (Eclipse Adoptium)"
+    date = "2025-01-14T20:37:09+0100",
+    comments = "version: 1.5.3.Final, compiler: javac, environment: Java 23.0.1 (Homebrew)"
 )
 @Component
 public class ProductRequestMapperImpl implements ProductRequestMapper {

@@ -1,0 +1,50 @@
+## YAML Template.
+---
+server:
+  port: 8081
+
+eureka:
+  client:
+    service-url: 
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+    register-with-eureka: true
+    fetch-registry: true
+logging:
+  level:
+    org.springframework.cloud.gateway: Debug
+    reactor.netty.http.client: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.boot.web: DEBUG
+    org.springframework.cloud.gateway.filter: DEBUG
+    org.springframework.cloud.gateway.handler: DEBUG
+    com.paymentchain.setups: DEBUG
+spring:
+  application:
+    name: apigateway
+  cloud:
+    gateway:
+      routes:
+#      - id: customer_full
+#        uri: lb://BUSINESSDOMAIN-CUSTOMER
+#        predicates:
+#        - Path=/business-customer/customer/V1/full
+      - id: customer_service
+        uri: lb://BUSINESSDOMAIN-CUSTOMER
+        predicates:
+        - Path=/business-customer/**
+        filters:
+        - name: AuthenticationFiltering
+      - id: product_service
+        uri: lb://businessdomain-product
+        predicates:
+        - Path=/business-product/**
+        filters:
+        - name: AuthenticationFiltering
+      - id: transaction_service
+        uri: lb://businessdomain-transaction
+        predicates:
+        - Path=/business-transaction/**
+        filters:
+        - name: AuthenticationFiltering
+    config:
+       enabled: false 
