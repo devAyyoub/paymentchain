@@ -1,0 +1,19 @@
+Microservices Architecture with Spring Boot
+
+This project implements a complete microservices architecture using Spring Boot and Spring Cloud. It includes business and infrastructure domains, applying best practices for scalability, security, and API management.
+
+Architecture Overview
+
+Business Domain Microservices:
+	•	Customer Service: Manages customer data and operations.
+	•	Product Service: Handles product-related functionality.
+	•	Transaction Service: Manages transactions and operations between customers and products.
+
+Infrastructure Domain Microservices:
+	•	Eureka Registry and Discovery: Service discovery for dynamic registration and lookup.
+	•	API Gateway: Central entry point with routing, load balancing, and security features.
+	•	Config Server: Centralized configuration management for microservices.
+	•	Spring Boot Admin: Monitors and manages microservices health and performance.
+
+Independent Service:
+	•	Billing Service: Dedicated service for billing and invoicing.
