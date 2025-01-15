@@ -1,9 +1,9 @@
 paymentchainparent3/businessdomain/customer/src/main/resources/application.properties
-paymentchainparent3/businessdomain/customer/src/main/resources/bootstrap.yaml
+paymentchainparent3/businessdomain/customer/src/main/resources/bootstrap.yml
 paymentchainparent3/businessdomain/product/src/main/resources/application.properties
-paymentchainparent3/businessdomain/product/src/main/resources/bootstrap.yaml
+paymentchainparent3/businessdomain/product/src/main/resources/bootstrap.yml
 paymentchainparent3/businessdomain/Transactions/src/main/resources/application.properties
-paymentchainparent3/businessdomain/Transactions/src/main/resources/bootstrap.yaml   
+paymentchainparent3/businessdomain/Transactions/src/main/resources/bootstrap.yml   
 paymentchainparent3/infraestructuradomain/apigateway/src/main/resources/application.yml
 paymentchainparent3/infraestructuradomain/eurekaserver/src/main/resources/application.properties
 paymentchainparent3/infraestructuradomain/keycloakAdapter/src/main/resources/application.properties
