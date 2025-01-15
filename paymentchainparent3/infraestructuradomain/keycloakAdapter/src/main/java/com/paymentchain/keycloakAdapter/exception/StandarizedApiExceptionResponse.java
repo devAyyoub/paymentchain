@@ -6,7 +6,7 @@
 package com.paymentchain.keycloakAdapter.exception;
 /**
  *
- * @author sotobotero
+ * @author ayyoub
  The effort to standardize rest API error reports  is support by ITEF 
  (Internet Engineering Task Force, open standard organization  that which develop and promotes voluntary internet standards) 
  in RFC 7807 which created a generalized error-handling schema composed by five parts.
