@@ -55,3 +55,8 @@ This project implements a complete **microservices architecture** using **Spring
 	•	Eureka Server: http://localhost:8761
 	•	Spring Boot Admin: http://localhost:9751
 	•	Swagger UI (API Docs): http://localhost:<service-port>/swagger-ui.html
+
+<img width="724" alt="Captura de pantalla 2025-01-15 a las 20 13 27" src="https://github.com/user-attachments/assets/513000ac-5877-42de-9d8a-c8fb4279d944" />
+
+
+

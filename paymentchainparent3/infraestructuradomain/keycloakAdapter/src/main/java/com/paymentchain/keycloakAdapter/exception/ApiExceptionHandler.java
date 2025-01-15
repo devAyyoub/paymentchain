@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  *
- * @author sotobotero
+ * @author ayyoub
  * Standard http communication have five levels of response codes
  * 100-level (Informational) — Server acknowledges a request, it mean that request was received and understood, it is transient response , alert client for awaiting response
  * 200-level (Success) — Server completed the request as expected

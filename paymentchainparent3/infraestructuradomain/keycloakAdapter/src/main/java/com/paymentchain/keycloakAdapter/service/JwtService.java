@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 /**
  *
- * @author sotobotero
+ * @author ayyoub
  */
 @Service
 public class JwtService {
