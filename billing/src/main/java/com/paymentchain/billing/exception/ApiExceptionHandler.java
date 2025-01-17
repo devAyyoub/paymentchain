@@ -1,20 +1,11 @@
 package com.paymentchain.billing.exception;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-
 import com.paymentchain.billing.common.StandarizedApiExceptionResponse;
 import java.io.IOException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-
 
 /**
  *
@@ -36,7 +27,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * 
  */
 @RestControllerAdvice//Indicate that this class assit a controller class and can have a body in response
-public class ApiExceptionHandler {   
+public class ApiExceptionHandler {
     
     //Allow define a method for handler this particular exception in transversal way, as a global exception handler
     @ExceptionHandler(BusinessRuleException.class)
@@ -46,6 +37,7 @@ public class ApiExceptionHandler {
      
     }  
     
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @ExceptionHandler(IOException.class)
     public ResponseEntity<StandarizedApiExceptionResponse> handleNoContentException(IOException ex) {
         StandarizedApiExceptionResponse response = new StandarizedApiExceptionResponse("Input Ouput Error","erorr-1024",ex.getMessage());

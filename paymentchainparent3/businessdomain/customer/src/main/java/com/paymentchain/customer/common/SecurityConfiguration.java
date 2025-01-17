@@ -5,7 +5,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+    @SuppressWarnings("unused")
     private static final String[] NO_AUTH_LIST = {
         "/v3/api-docs/**",
         "/swagger-ui/**",
@@ -38,44 +38,44 @@ public class SecurityConfiguration {
         //Choose one configuration
 
         //01- Full security in order to ask by user and password before to acces swagger ui
-//        http
-//                .csrf().disable()
-//                .cors().and()
-//                .authorizeHttpRequests(authz -> authz
-//                .requestMatchers(NO_AUTH_LIST).permitAll() // Permitir acceso a las rutas de Swagger
-//                .anyRequest().authenticated() // Proteger el resto de las rutas
-//                )
-//                .httpBasic(withDefaults())
-//                .formLogin(withDefaults());
+        //        http
+        //                .csrf().disable()
+        //                .cors().and()
+        //                .authorizeHttpRequests(authz -> authz
+        //                .requestMatchers(NO_AUTH_LIST).permitAll() // Permitir acceso a las rutas de Swagger
+        //                .anyRequest().authenticated() // Proteger el resto de las rutas
+        //                )
+        //                .httpBasic(withDefaults())
+        //                .formLogin(withDefaults());
         http
-                .csrf().disable()
-                .cors().and()
+                .csrf(csrf -> csrf.disable())
+                .cors(withDefaults())
                 .authorizeHttpRequests(authz -> authz
-                .anyRequest().permitAll() // Permitir todas las rutas
+                                .anyRequest().permitAll() // Permitir todas las rutas
                 );
         return http.build();
         //02- Custom security configuration, we can excluse some paths and ask by user and password before each request to acces swagger ui
-//        http
-//                /*- This property is active by default, we need to deactivate in order to allow ask by user and password on post methods.
-//             
-//             - Cross site request forgery (CSRF or XSRF) refers to an attack that makes the end-user perform unwanted actions within a web application 
-//             that has already granted them authentication.
-//             
-//            - The best option for protect is use a Token on each request, like  a JWT
-//                 */
-//                .csrf().disable()
-//                //Configure custom restrictions in order to ask by user and password
-//                .authorizeHttpRequests((authz) -> authz
-//                .requestMatchers(NO_AUTH_LIST).permitAll()
-//                .requestMatchers(HttpMethod.POST, "/*customer*/**").authenticated()
-//                //Using defauls values, we can define role on .properties file that will be set whne user is authetnticate
-//                .requestMatchers(HttpMethod.GET, "/*customer*/**").hasRole("ADMIN")
-//                )
-//                //Use default credentials on .properties file
-//                .httpBasic(withDefaults())
-//                //use default UI.
-//                .formLogin(withDefaults());
-//        return http.build();
+        //        http
+        //                /*- This property is active by default, we need to deactivate in order to allow ask by user and password on post methods.
+        //             
+        //             - Cross site request forgery (CSRF or XSRF) refers to an attack that makes the end-user perform unwanted actions within a web application 
+        //             that has already granted them authentication.
+        //             
+        //            - The best option for protect is use a Token on each request, like  a JWT
+        //                 */
+        //                .csrf().disable()
+        //                //Configure custom restrictions in order to ask by user and password
+        //                .authorizeHttpRequests((authz) -> authz
+        //                .requestMatchers(NO_AUTH_LIST).permitAll()
+        //                .requestMatchers(HttpMethod.POST, "/*customer*/**").authenticated()
+        //                //Using defauls values, we can define role on .properties file that will be set whne user is authetnticate
+        //                .requestMatchers(HttpMethod.GET, "/*customer*/**").hasRole("ADMIN")
+        //                )
+        //                //Use default credentials on .properties file
+        //                .httpBasic(withDefaults())
+        //                //use default UI.
+        //                .formLogin(withDefaults());
+        //        return http.build();
     }
 
     //This Handlers implement the CorsConfigurationSource interface in order to provide a CorsConfiguration for each request.

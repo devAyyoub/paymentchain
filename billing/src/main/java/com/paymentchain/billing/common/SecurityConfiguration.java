@@ -1,4 +1,3 @@
-
 package com.paymentchain.billing.common;
 
 import java.time.Duration;
@@ -53,13 +52,13 @@ public class SecurityConfiguration {
              
             - The best option for protect is use a Token on each request, like  a JWT
                  */
-                .csrf().disable()
+                .csrf(csrf -> csrf.disable())
                 //Configure custom restrictions in order to ask by user and password
                 .authorizeHttpRequests((authz) -> authz
-                .antMatchers(NO_AUTH_LIST).permitAll()
-                .antMatchers(HttpMethod.POST, "/*billing*/**").authenticated()
-                //Using defauls values, we can define role on .properties file that will be set whne user is authetnticate
-                .antMatchers(HttpMethod.GET, "/*billing*/**").hasRole("ADMIN")
+                                .antMatchers(NO_AUTH_LIST).permitAll()
+                                .antMatchers(HttpMethod.POST, "/*billing*/**").authenticated()
+                                //Using defauls values, we can define role on .properties file that will be set whne user is authetnticate
+                                .antMatchers(HttpMethod.GET, "/*billing*/**").hasRole("ADMIN")
                 )
                 //Use default credentials on .properties file
                 .httpBasic(withDefaults())

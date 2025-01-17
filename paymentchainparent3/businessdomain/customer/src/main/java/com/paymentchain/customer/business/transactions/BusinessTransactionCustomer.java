@@ -70,18 +70,38 @@ public class BusinessTransactionCustomer {
                 connection.addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
             });
 
+    public ResponseEntity<List<CustomerResponse>> list() {
+        List<Customer> findAll = customerRepository.findAll();
+        if (findAll.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            List<CustomerResponse> response = crsm.CustomerListToCustomerResponseList(findAll);
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    public ResponseEntity<?> delete(long id) {
+        Optional<Customer> findById = customerRepository.findById(id);
+        if (findById.get() != null) {
+            customerRepository.delete(findById.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
     public CustomerResponse get(String code) throws BusinessRuleException {
-        // Buscar el cliente por su código
+        // Search customer by code
         Customer customer = customerRepository.findByCode(code);
         if (customer == null) {
             throw new BusinessRuleException(
                     "1025",
-                    "Error validación, customer con codigo " + code + " no existe",
+                    "Validation error, customer with code " + code + " does not exist",
                     HttpStatus.PRECONDITION_FAILED
             );
         }
 
-        // Procesar productos del cliente
+        // Process customer products
         List<CustomerProduct> products = customer.getProducts();
         if (products != null) {
             products.forEach(product -> {
@@ -95,12 +115,30 @@ public class BusinessTransactionCustomer {
             });
         }
 
-        // Buscar todas las transacciones asociadas con el IBAN del cliente
+        // Find all transactions associated with the customer's IBAN
         List<?> transactions = getTransactions(customer.getIban());
         customer.setTransactions(transactions);
 
-        // Convertir el Customer a CustomerResponse
+        // Convert Customer to CustomerResponse
         return crsm.CustomerToCustomerResponse(customer);
+    }
+
+    public ResponseEntity<?> put(long id, CustomerRequest input) {
+        Customer customer = crm.CustomerRequestToCustomer(input);
+        Customer find = customerRepository.findById(id).get();
+        if (find != null) {
+            find.setCode(customer.getCode());
+            find.setName(customer.getName());
+            find.setIban(customer.getIban());
+            find.setPhone(customer.getPhone());
+            find.setSurname(customer.getSurname());
+        }
+        @SuppressWarnings("null")
+        Customer save = customerRepository.save(find);
+
+        CustomerResponse response = crsm.CustomerToCustomerResponse(save);
+
+        return ResponseEntity.ok(response);
     }
 
     public ResponseEntity<CustomerResponse> get(long id) {
@@ -114,17 +152,17 @@ public class BusinessTransactionCustomer {
     }
 
     public ResponseEntity<CustomerResponse> post(CustomerRequest input) throws BusinessRuleException, UnknownHostException {
-        // Mapear el DTO a la entidad
+        // Map the DTO to the entity
         Customer customer = crm.CustomerRequestToCustomer(input);
 
-        // Validar los productos
+        // Validate the products
         if (customer.getProducts() != null) {
             for (CustomerProduct product : customer.getProducts()) {
                 String productName = getProductName(product.getProductId());
                 if (productName.isBlank()) {
                     throw new BusinessRuleException(
                             "1025",
-                            "Error validación, producto con id " + product.getProductId() + " no existe",
+                            "Validation error, product with id " + product.getProductId() + " does not exist",
                             HttpStatus.PRECONDITION_FAILED
                     );
                 } else {
@@ -133,10 +171,10 @@ public class BusinessTransactionCustomer {
             }
         }
 
-        // Guardar el cliente en la base de datos
+        // Save client in the database
         Customer savedCustomer = customerRepository.save(customer);
 
-        // Mapear la entidad guardada a la respuesta DTO
+        // Convert the entity to the DTO
         CustomerResponse response = crsm.CustomerToCustomerResponse(savedCustomer);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -148,7 +186,7 @@ public class BusinessTransactionCustomer {
      * @param id of product to find
      * @return name of product if it was find
      */
-    private String getProductName(long id) throws UnknownHostException {
+    private String getProductName(long productId) throws UnknownHostException {
         String name = "";
         try {
             WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
@@ -156,7 +194,7 @@ public class BusinessTransactionCustomer {
                     .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .defaultUriVariables(Collections.singletonMap("url", "http://BUSINESSDOMAIN-PRODUCT/business-product/product"))
                     .build();
-            JsonNode block = build.method(HttpMethod.GET).uri("/" + id)
+            JsonNode block = build.method(HttpMethod.GET).uri("/" + productId)
                     .retrieve().bodyToMono(JsonNode.class).block();
             name = block.get("name").asText();
         } catch (WebClientResponseException ex) {

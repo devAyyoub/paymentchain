@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
 package com.paymentchain.customer.common;
 
 import com.paymentchain.customer.dto.CustomerRequest;
@@ -16,8 +12,7 @@ import org.mapstruct.Mapper;
  */
 @Mapper(componentModel = "spring") 
 public interface CustomerRequestMapper {
-
-   
+      
     Customer CustomerRequestToCustomer(CustomerRequest source);
 
     List<Customer> CustomerRequestListToCustomerList(List<CustomerRequest> source);

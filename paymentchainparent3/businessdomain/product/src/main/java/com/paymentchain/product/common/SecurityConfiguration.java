@@ -5,8 +5,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -38,15 +36,15 @@ public class SecurityConfiguration {
         //Choose one configuration
 
         //01- Full security in order to ask by user and password before to acces swagger ui
-//        http
-//                .csrf().disable()
-//                .cors().and()
-//                .authorizeHttpRequests(authz -> authz
-//                .requestMatchers(NO_AUTH_LIST).permitAll() // Permitir acceso a las rutas de Swagger
-//                .anyRequest().authenticated() // Proteger el resto de las rutas
-//                )
-//                .httpBasic(withDefaults())
-//                .formLogin(withDefaults());
+        //        http
+        //                .csrf().disable()
+        //                .cors().and()
+        //                .authorizeHttpRequests(authz -> authz
+        //                .requestMatchers(NO_AUTH_LIST).permitAll() // Permitir acceso a las rutas de Swagger
+        //                .anyRequest().authenticated() // Proteger el resto de las rutas
+        //                )
+        //                .httpBasic(withDefaults())
+        //                .formLogin(withDefaults());
         http
                 .csrf().disable()
                 .cors().and()

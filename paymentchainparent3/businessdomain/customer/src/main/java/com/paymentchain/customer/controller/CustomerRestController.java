@@ -3,17 +3,14 @@ package com.paymentchain.customer.controller;
 import com.paymentchain.customer.business.transactions.BusinessTransactionCustomer;
 import com.paymentchain.customer.dto.CustomerRequest;
 import com.paymentchain.customer.dto.CustomerResponse;
-import com.paymentchain.customer.entities.Customer;
 import com.paymentchain.customer.exception.BusinessRuleException;
 import com.paymentchain.customer.respository.CustomerRepository;
 import java.net.UnknownHostException;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,17 +39,12 @@ public class CustomerRestController {
 
     @GetMapping("/check")
     public String check() {
-        return "Hello your proerty value is: " + env.getProperty("custom.activeprofileName");
+        return "Your property value is: " + env.getProperty("custom.activeprofileName");
     }
 
     @GetMapping()
-    public ResponseEntity<List<Customer>> list() {
-        List<Customer> findAll = customerRepository.findAll();
-        if (findAll.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } else {
-            return ResponseEntity.ok(findAll);
-        }
+    public ResponseEntity<List<CustomerResponse>> list() {
+        return bt.list();
     }
 
     @GetMapping("/{id}")
@@ -61,32 +53,18 @@ public class CustomerRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> put(@PathVariable(name = "id") long id, @RequestBody Customer input) {
-        Customer find = customerRepository.findById(id).get();
-        if (find != null) {
-            find.setCode(input.getCode());
-            find.setName(input.getName());
-            find.setIban(input.getIban());
-            find.setPhone(input.getPhone());
-            find.setSurname(input.getSurname());
-        }
-        Customer save = customerRepository.save(find);
-        return ResponseEntity.ok(save);
+    public ResponseEntity<?> put(@PathVariable(name = "id") long id, @RequestBody CustomerRequest input) {
+        return bt.put(id, input);
     }
 
     @PostMapping
     public ResponseEntity<CustomerResponse> post(@RequestBody CustomerRequest input) throws BusinessRuleException, UnknownHostException {
-        // Delegar la lógica al servicio y devolver la respuesta directamente
         return bt.post(input);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(name = "id") long id) {
-        Optional<Customer> findById = customerRepository.findById(id);
-        if (findById.get() != null) {
-            customerRepository.delete(findById.get());
-        }
-        return ResponseEntity.ok().build();
+        return bt.delete(id);
     }
 
     @GetMapping("/full")

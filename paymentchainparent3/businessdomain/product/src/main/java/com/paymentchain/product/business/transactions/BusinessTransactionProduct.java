@@ -55,7 +55,7 @@ public class BusinessTransactionProduct {
         }
     }
 
-    public ResponseEntity<ProductResponse> put(long id, @RequestBody ProductRequest input) {
+    public ResponseEntity<ProductResponse> put(long id, ProductRequest input) {
         Product ProductRequestToProduct = prm.ProductRequestToProduct(input);
         Product find = productRepository.findById(id).get();
         if (find != null) {

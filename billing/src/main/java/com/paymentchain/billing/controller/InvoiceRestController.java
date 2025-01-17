@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.paymentchain.billing.controller;
 
 
@@ -50,7 +45,7 @@ public class InvoiceRestController {
     InvoiceResponseMapper irsm;
     
     @Operation(description = "Return all invoices bundled into Response", summary ="Return 204 if no data found")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200",description = "Exito"),
+    @ApiResponses(value = {@ApiResponse(responseCode = "200",description = "Success"),
     @ApiResponse(responseCode = "500", description = "Internal error")})
     
     @GetMapping()
@@ -91,7 +86,7 @@ public class InvoiceRestController {
     
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable String id) {
-          Invoice save = null; 
+        //Invoice save = null; 
         Optional<Invoice> findById = billingRepository.findById(Long.valueOf(id));
         Invoice get = findById.get();
         if(get != null){               
