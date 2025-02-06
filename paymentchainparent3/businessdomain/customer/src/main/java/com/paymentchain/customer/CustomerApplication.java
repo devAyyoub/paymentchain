@@ -20,13 +20,4 @@ public class CustomerApplication {
         return WebClient.builder();
     }
 
-//    @Bean
-//    public OpenAPI customOpenAPI() {
-//        return new OpenAPI()
-//                .components(new Components())
-//                .info(new Info()
-//                        .title("Customer API")
-//                        .version("1.0.0"));
-//    }
-
 }
