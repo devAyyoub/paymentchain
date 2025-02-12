@@ -20,7 +20,6 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17">
-      <module name="billing" target="17" />
       <module name="businessdomain" target="17" />
       <module name="configserver" target="17" />
       <module name="customer" target="17" />
