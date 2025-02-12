@@ -28,6 +28,7 @@ import org.springframework.http.ResponseEntity;
  * @author ayyoub
  */
 @RestController
+@CrossOrigin
 public class keycloakAdapterController {
 
     private Logger logger = LoggerFactory.getLogger(keycloakAdapterController.class);

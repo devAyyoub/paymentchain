@@ -2,7 +2,7 @@ version: '3.8'
 services:
   registry-discovery:
     container_name: eureka_container
-    image: eureka_image2:latest
+    image: eureka_image:latest
     networks:
       - red-paymentchain
     ports:
@@ -12,7 +12,7 @@ services:
 
   apigateway:
     container_name: apigateway_container
-    image: apigateway_image2:latest
+    image: apigateway_image:latest
     networks:
       - red-paymentchain
     ports:
@@ -24,7 +24,7 @@ services:
 
   product-catalog:
     container_name: product_container
-    image: product_image2:latest
+    image: product_image:latest
     networks:
       - red-paymentchain
     environment:
@@ -37,15 +37,16 @@ services:
 
   customer:
     container_name: customer_container
-    image: customer_image2:latest
+    image: customer_image:latest
     networks:
       - red-paymentchain
     environment:
       - JAVA_OPTS=-Xms256M -Xmx256M
       - EUREKA_SERVER=http://registry-discovery:8761/eureka/
-      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
     depends_on:
       - registry-discovery
+    ports:
+      - "7080:7080"
   
   keycloak:
     container_name: keycloakAdapter
@@ -57,7 +58,7 @@ services:
       - EUREKA_SERVER=http://registry-discovery:8761/eureka/
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
       - KEYCLOAK_SERVER=http://keycloak_server:8080/realms/
-      - KEYCLOAK_REAL_ID=Sg-SyKcNLOTcuu-MxlVU6_WgBArNZtsAmTDK-QoNVHM
+      - KEYCLOAK_REAL_ID=XeQYVS9MMydPHIMt3ZP7FefvD2yrg7wmnVRq6NVDb7I
     depends_on:
       - registry-discovery
     ports:
@@ -65,7 +66,7 @@ services:
 
   transactions:
     container_name: transaction_container
-    image: transaction_image2:latest
+    image: transaction_image:latest
     networks:
       - red-paymentchain
     environment:
